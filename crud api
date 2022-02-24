@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <style>
+      * {
+        margin: 0%;
+        padding: 0%;
+      }
+      .nav {
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+        padding: 10px;
+        background-color: rgb(95, 93, 93);
+      }
+      button {
+        background-color: black;
+        outline: none;
+        border: none;
+        color: white;
+        padding: 5px;
+        border-radius: 5px;
+        font-size: 15px;
+        font-weight:800;
+        margin: 3px;
+      }
+    </style>
+  </head>
+  <body>
+    <nav class="nav">
+      <h1>ToDo</h1>
+     
+      <button onclick="showData()">Show Data</button>
+    </nav>
+    <form onsubmit="event.preventDefault()" action="" style="margin-top: 10px; float: right;"> 
+      <input required type="text" id="getUserId" placeholder="userId"> <br>
+      <!-- <input required type="text" id="getId" placeholder="id"><br> -->
+      <input required type="text" id="getTitle" placeholder="title"><br>
+      <input required type="text" id="getComplete" placeholder="Complete"><br>
+      <button required  onclick="getData()">create data</button>
+
+    </form>
+    <div>
+      <table id="getdata"></table>  
+    </div>
+
+    <div  style="display: none; position: absolute;top:240px; left: 1000px;" id="box"> 
+      <h1>Edit Data</h1>
+      user Id : <input type="text" id="eUserId"> <br> 
+      Title  :    <input type="text" id="eTitle"> <br>
+      Complted : <input type="text" id="eCompleted"><br>
+    </div>
+    
+    <script>
+        let array =[]
+    
+
+
+        function editData(){
+          var a = document.getElementById('box')
+          console.log(a.style.display)
+          a.style.display="block";
+        } 
+
+
+
+       function getData(){
+
+        let update = {
+          userId : document.getElementById('getUserId').value,
+          // id : document.getElementById('getId').value,
+          title : document.getElementById('getTitle').value,
+          completed : document.getElementById('getComplete').value,
+
+        }
+        // console.log(update);
+        array.unshift(update)
+        array.map((d,key) => { 
+        update +=
+      `<tr>
+          <td  contenteditable ='true'>${d.userId}</td>
+          <td  contenteditable ='true'>${key+1}</td>
+          <td  contenteditable ='true'>${d.title}</td>
+          <td  contenteditable ='true'>${d.completed}</td>
+          <td> <button onclick="saveEdit()"> save</button> </td>
+          <td> <button  class="fa fa-trash"  onclick="del(${d.id})"> </button> </td>
+
+      </tr>`;
+     });
+       document.getElementById('getdata').innerHTML=update 
+            }
+ 
+async function showData(){
+  let res = await fetch("https://jsonplaceholder.typicode.com/todos")
+  let data = await res.json()
+   array = data
+   console.log(array);
+  let listItem =`<tr class="contenteditable"> <td >User </td>
+          <td contenteditable ='true'>Id</td>
+          <td contenteditable ='true'>Title</td>
+          <td contenteditable ='true'>completed</td></tr>`
+  data.forEach(d => { 
+    listItem +=
+    `<tr>
+          <td  contenteditable ='true'>${d.userId}</td>
+          <td  contenteditable ='true'>${d.id}</td>
+          <td  contenteditable ='true'>${d.title}</td>
+          <td  contenteditable ='true'>${d.completed}</td>
+          <td> <button  onclick="saveEdit()"> save</button> </td>
+          <td> <button class="fa fa-trash" onclick="del(${d.id})"> </button> </td>
+          
+     </tr>`; 
+
+  });
+
+  document.getElementById('getdata').innerHTML=listItem
+
+}
+
+  function saveEdit(){
+    alert("Data update successfully")
+  }
+
+
+function del(res){
+  
+  let listItem=`<tr> <td>User </td>
+          <td>Id</td>
+          <td>Title</td>
+          <td>completed</td></tr>`
+          
+  let filter = array.filter((e)=>{
+    // console.log(e);                                                                                                   
+    return e.id != res
+  })
+  array =filter
+  filter.map((e)=>{
+      listItem +=
+    `<tr>
+          <td contenteditable ='true'>${e.userId}</td>
+          <td contenteditable ='true'>${e.id}</td>
+          <td contenteditable ='true'>${e.title}</td>
+          <td contenteditable ='true'>${e.completed}</td>
+          <td> <button onclick="saveEdit()"> save</button> </td>
+          <td> <button class="fa fa-trash" onclick="del(${e.id})"> </button> </td>
+
+     </tr>`;
+  })
+ 
+  
+  console.log(filter);
+  document.getElementById('getdata').innerHTML=listItem
+
+}
+
+
+
+
+</script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js" integrity="sha384-IQsoLXl5PILFhosVNubq5LC7Qb9DXgDA9i+tQ8Zj3iwWAwPtgFTxbJ8NT4GN1R8p" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.min.js" integrity="sha384-cVKIPhGWiC2Al4u+LWgxfKTRIcfu0JTxR+EQDz/bgldoEyl4H0zUF0QKbrJ0EcQF" crossorigin="anonymous"></script>
+   </body>
+   </html>
+
+
+   
